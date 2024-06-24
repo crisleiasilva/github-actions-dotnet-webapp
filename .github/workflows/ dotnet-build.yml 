@@ -1,0 +1,32 @@
+name: .NET Build and Test
+
+on:
+  push:
+    branches: [ main ]
+  schedule:
+    - cron: '0 * * * *' # Executar a cada hora
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 6.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build and test
+        run: dotnet build --configuration Release && dotnet test --no-build
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: dotnet-artifacts
+          path: |
+            **/bin/Release/netcoreapp6.0/**
+            **/TestResults/**
